@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:whole_selle_x_application/src/features/home/controlller/home_controller.dart';
 import 'package:whole_selle_x_application/src/features/introduction_screes/controller/introduction_provider.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 import 'package:whole_selle_x_application/src/theme/them.dart'; // Import your GoRouter config
@@ -17,6 +18,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<IntroductionProvider>(
           create: (_) => IntroductionProvider(),
+        ),
+        ChangeNotifierProvider<BottomNavProvider>(
+          create: (_) => BottomNavProvider(),
         ),
       ],
       child: MaterialApp.router(

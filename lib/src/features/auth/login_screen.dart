@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void login() {
     if (_formKey.currentState!.validate()) {
+      context.pushNamed(AppRoute.bottom);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
