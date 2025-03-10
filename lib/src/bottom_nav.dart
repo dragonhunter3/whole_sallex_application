@@ -5,7 +5,7 @@ import 'package:whole_selle_x_application/src/features/aution/aution_home.dart';
 import 'package:whole_selle_x_application/src/features/home/add_products.dart';
 import 'package:whole_selle_x_application/src/features/home/controlller/home_controller.dart';
 import 'package:whole_selle_x_application/src/features/home/home_page.dart';
-import 'package:whole_selle_x_application/src/features/home/user_profile.dart';
+import 'package:whole_selle_x_application/src/features/setting/setting.dart';
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({super.key});
@@ -13,7 +13,7 @@ class BottomNavBar extends StatelessWidget {
   static final List<Widget> _screens = [
     const HomeScreen(),
     const AddProductsScreen(),
-    const UserProfileScreen(),
+    const SettingScreen(),
     const AutionHomeScreen(),
   ];
 
@@ -36,7 +36,8 @@ class BottomNavBar extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_bag), label: 'Products'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
           BottomNavigationBarItem(
               icon: Icon(Icons.currency_exchange_outlined), label: 'Autions'),
         ],

@@ -3,11 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/bottom_nav.dart';
 import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
+import 'package:whole_selle_x_application/src/features/categories/main_catogery.dart';
 import 'package:whole_selle_x_application/src/features/home/add_products.dart';
 import 'package:whole_selle_x_application/src/features/home/home_page.dart';
 import 'package:whole_selle_x_application/src/features/home/user_profile.dart';
 import 'package:whole_selle_x_application/src/features/introduction_screes/introduction_one.dart';
 import 'package:whole_selle_x_application/src/features/auth/login_screen.dart';
+import 'package:whole_selle_x_application/src/features/notifications/notifications.dart';
 import 'package:whole_selle_x_application/src/router/error_route.dart';
 import 'package:whole_selle_x_application/src/router/route_transition.dart';
 
@@ -87,6 +89,24 @@ class MyAppRouter {
           child: UserProfileScreen(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.notificationscreen,
+        path: '/${AppRoute.notificationscreen}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: NotificationScreen(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.catogerypage,
+        path: '/${AppRoute.catogerypage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: MainCategoryPage(),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -110,4 +130,6 @@ class AppRoute {
   static const String home = 'home-page';
   static const String products = 'add-products';
   static const String profile = 'user-profile';
+  static const String notificationscreen = 'notifications';
+  static const String catogerypage = 'main-catogery';
 }

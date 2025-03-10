@@ -1,7 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_textform_filed.dart';
+import 'package:whole_selle_x_application/src/features/home/widgets/widgetlist.dart';
+import 'package:whole_selle_x_application/src/router/route.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,28 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List items = [
-    Container(
-      height: 200,
-      width: 400,
-      color: Colors.amberAccent,
-    ),
-    Container(
-      height: 200,
-      width: 400,
-      color: Colors.green,
-    ),
-    Container(
-      height: 200,
-      width: 400,
-      color: Colors.deepOrange,
-    ),
-    Container(
-      height: 200,
-      width: 400,
-      color: Colors.purple,
-    ),
-  ];
   int _currentIndex = 0;
   CarouselSliderController _carouselSliderController =
       CarouselSliderController();
@@ -50,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CircleAvatar(
-                  // backgroundImage: AssetImage(AppImages.facebook),
                   backgroundColor: colorScheme(context).primary,
                   radius: 20,
                 ),
@@ -69,10 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Spacer(),
-            Badge(
-              child: Icon(
-                Icons.notifications,
-                color: colorScheme(context).surface,
+            GestureDetector(
+              onTap: () => context.pushNamed(AppRoute.notificationscreen),
+              child: Badge(
+                child: Icon(
+                  Icons.notifications,
+                  color: colorScheme(context).surface,
+                ),
               ),
             ),
             SizedBox(width: 16)
@@ -107,10 +91,182 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-                Row()
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    builsRowWidget(_currentIndex == 0
+                        ? colorScheme(context).primary
+                        : colorScheme(context).onPrimary),
+                    builsRowWidget(_currentIndex == 1
+                        ? colorScheme(context).primary
+                        : colorScheme(context).onPrimary),
+                    builsRowWidget(_currentIndex == 2
+                        ? colorScheme(context).primary
+                        : colorScheme(context).onPrimary),
+                    builsRowWidget(_currentIndex == 3
+                        ? colorScheme(context).primary
+                        : colorScheme(context).onPrimary),
+                  ],
+                ),
+                textinRow("Sales", "show all", () {}),
+                SizedBox(
+                  height: 200,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView.builder(
+                    itemCount: 4,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                      image: AssetImage(AppImages.facebook),
+                                      fit: BoxFit.cover)),
+                            ),
+                          ),
+                          Text(
+                            "Watches",
+                            style: txtTheme(context).displaySmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme(context).surface),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                "\$ 400",
+                                style: txtTheme(context).displaySmall?.copyWith(
+                                    color: colorScheme(context).primary),
+                              ),
+                              SizedBox(width: 30),
+                              Icon(
+                                Icons.chat,
+                                color: colorScheme(context).primary,
+                              )
+                            ],
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                textinRow("Catogery", "show all", () {
+                  context.pushNamed(AppRoute.catogerypage);
+                }),
+                SizedBox(
+                  height: 90,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView.builder(
+                    itemCount: 4,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset(
+                            AppImages.facebook,
+                            fit: BoxFit.cover,
+                          ));
+                    },
+                  ),
+                ),
+                textinRow("Most Papular", "show all", () {}),
+                SizedBox(
+                  height: 200,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView.builder(
+                    itemCount: 4,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                      image: AssetImage(AppImages.facebook),
+                                      fit: BoxFit.cover)),
+                            ),
+                          ),
+                          Text(
+                            "Watches",
+                            style: txtTheme(context).displaySmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme(context).surface),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                "\$ 400",
+                                style: txtTheme(context).displaySmall?.copyWith(
+                                    color: colorScheme(context).primary),
+                              ),
+                              SizedBox(width: 30),
+                              Icon(
+                                Icons.chat,
+                                color: colorScheme(context).primary,
+                              )
+                            ],
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),
         ));
+  }
+
+  Widget builsRowWidget(Color color) {
+    return Padding(
+      padding: const EdgeInsets.all(2),
+      child: Container(
+        height: 10,
+        width: 10,
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            shape: BoxShape.circle,
+            color: color),
+      ),
+    );
+  }
+
+  Widget textinRow(String text1, String text2, VoidCallback onTap) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          text1,
+          style: txtTheme(context).displayMedium?.copyWith(
+              color: colorScheme(context).surface, fontWeight: FontWeight.bold),
+        ),
+        GestureDetector(
+          onTap: onTap,
+          child: Text(
+            text2,
+            style: txtTheme(context)
+                .displaySmall
+                ?.copyWith(color: colorScheme(context).primary),
+          ),
+        )
+      ],
+    );
   }
 }

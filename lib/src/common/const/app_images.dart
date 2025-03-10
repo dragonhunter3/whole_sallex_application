@@ -4,6 +4,7 @@ class AppImages {
   static String introThree = 'assets/images/introThree.png';
   static String google = 'assets/images/google.png';
   static String facebook = 'assets/images/facebook.png';
+  static String aution = 'assets/images/aution.jpg';
 }
 
 class AppIcons {
