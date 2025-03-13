@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/bottom_nav.dart';
 import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
+import 'package:whole_selle_x_application/src/features/categories/item_screen.dart';
 import 'package:whole_selle_x_application/src/features/categories/main_catogery.dart';
+import 'package:whole_selle_x_application/src/features/categories/search_items.dart';
 import 'package:whole_selle_x_application/src/features/home/add_products.dart';
 import 'package:whole_selle_x_application/src/features/home/home_page.dart';
 import 'package:whole_selle_x_application/src/features/home/user_profile.dart';
@@ -107,6 +109,24 @@ class MyAppRouter {
           child: MainCategoryPage(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.itemsScreen,
+        path: '/${AppRoute.itemsScreen}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: SearchItems(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.itempage,
+        path: '/${AppRoute.itempage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: ItemScreenPage(),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -132,4 +152,6 @@ class AppRoute {
   static const String profile = 'user-profile';
   static const String notificationscreen = 'notifications';
   static const String catogerypage = 'main-catogery';
+  static const String itemsScreen = 'search-items';
+  static const String itempage = 'item-screen';
 }

@@ -169,7 +169,6 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget CustomBottomSheet() {
     return BottomSheet(
       onClosing: () {},
-      // isScrollControlled: true,
       builder: (context) {
         return Container(
           height: 400,

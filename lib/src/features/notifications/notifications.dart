@@ -13,6 +13,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: colorScheme(context).onPrimary,
+        appBar: AppBar(
+          backgroundColor: colorScheme(context).onPrimary,
+          iconTheme: IconThemeData(color: colorScheme(context).surface),
+          title: Text("Notifications"),
+          centerTitle: true,
+          titleTextStyle: txtTheme(context).displayMedium?.copyWith(
+              fontWeight: FontWeight.bold, color: colorScheme(context).surface),
+        ),
         body: SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
