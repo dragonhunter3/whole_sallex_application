@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whole_selle_x_application/src/features/categories/controller/sort_controller.dart';
+import 'package:whole_selle_x_application/src/features/filters/controllers/brand_controller.dart';
+import 'package:whole_selle_x_application/src/features/filters/controllers/filter_controller.dart';
 import 'package:whole_selle_x_application/src/features/home/controlller/home_controller.dart';
 import 'package:whole_selle_x_application/src/features/introduction_screes/controller/introduction_provider.dart';
 import 'package:whole_selle_x_application/src/features/setting/controller/setting_controller.dart';
@@ -29,6 +31,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SortProvider>(
           create: (_) => SortProvider(),
+        ),
+        ChangeNotifierProvider<FilterController>(
+          create: (_) => FilterController(),
+        ),
+        ChangeNotifierProvider<BrandController>(
+          create: (_) => BrandController(),
         ),
       ],
       child: MaterialApp.router(

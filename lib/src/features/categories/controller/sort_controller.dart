@@ -7,6 +7,6 @@ class SortProvider extends ChangeNotifier {
 
   void setSortOption(String newSort) {
     _selectedSort = newSort;
-    notifyListeners(); // Notify UI to rebuild
+    notifyListeners();
   }
 }

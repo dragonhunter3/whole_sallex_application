@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/bottom_nav.dart';
 import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
+import 'package:whole_selle_x_application/src/features/filters/brands.dart';
+import 'package:whole_selle_x_application/src/features/filters/filter_screen.dart';
 import 'package:whole_selle_x_application/src/features/categories/item_screen.dart';
 import 'package:whole_selle_x_application/src/features/categories/main_catogery.dart';
 import 'package:whole_selle_x_application/src/features/categories/search_items.dart';
@@ -127,6 +129,24 @@ class MyAppRouter {
           child: ItemScreenPage(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.filterpage,
+        path: '/${AppRoute.filterpage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: FilterScreen(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.brandpage,
+        path: '/${AppRoute.brandpage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: BrandsScreen(),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -154,4 +174,6 @@ class AppRoute {
   static const String catogerypage = 'main-catogery';
   static const String itemsScreen = 'search-items';
   static const String itempage = 'item-screen';
+  static const String filterpage = 'filter-screen';
+  static const String brandpage = 'brands';
 }

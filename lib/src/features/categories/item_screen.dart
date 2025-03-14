@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/features/categories/controller/sort_controller.dart';
 import 'package:whole_selle_x_application/src/features/categories/widgets/custom_bottom_sheet.dart';
+import 'package:whole_selle_x_application/src/router/route.dart';
 
 class ItemScreenPage extends StatefulWidget {
   const ItemScreenPage({super.key});
@@ -67,17 +69,21 @@ class _ItemScreenPageState extends State<ItemScreenPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                SizedBox(
-                  width: 70,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SvgPicture.asset(AppIcons.filter),
-                      Text("Filter",
-                          style: txtTheme(context)
-                              .headlineMedium
-                              ?.copyWith(color: colorScheme(context).surface)),
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    context.pushNamed(AppRoute.filterpage);
+                  },
+                  child: SizedBox(
+                    width: 70,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SvgPicture.asset(AppIcons.filter),
+                        Text("Filter",
+                            style: txtTheme(context).headlineMedium?.copyWith(
+                                color: colorScheme(context).surface)),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(
