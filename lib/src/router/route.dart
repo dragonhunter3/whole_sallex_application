@@ -3,9 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/bottom_nav.dart';
 import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
+import 'package:whole_selle_x_application/src/features/favorites/favorit_screen.dart';
 import 'package:whole_selle_x_application/src/features/filters/brands.dart';
 import 'package:whole_selle_x_application/src/features/filters/filter_screen.dart';
-import 'package:whole_selle_x_application/src/features/categories/item_screen.dart';
+import 'package:whole_selle_x_application/src/features/items_screen/detail_screen.dart';
+import 'package:whole_selle_x_application/src/features/items_screen/item_screen.dart';
 import 'package:whole_selle_x_application/src/features/categories/main_catogery.dart';
 import 'package:whole_selle_x_application/src/features/categories/search_items.dart';
 import 'package:whole_selle_x_application/src/features/home/add_products.dart';
@@ -147,6 +149,24 @@ class MyAppRouter {
           child: BrandsScreen(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.favorit,
+        path: '/${AppRoute.favorit}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: FavoritesScreen(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.detailpage,
+        path: '/${AppRoute.detailpage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: DetailScreenItems(),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -176,4 +196,6 @@ class AppRoute {
   static const String itempage = 'item-screen';
   static const String filterpage = 'filter-screen';
   static const String brandpage = 'brands';
+  static const String favorit = 'favorit-screen';
+  static const String detailpage = 'detail-screen';
 }

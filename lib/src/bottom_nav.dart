@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
-import 'package:whole_selle_x_application/src/features/aution/aution_home.dart';
+import 'package:whole_selle_x_application/src/features/favorites/favorit_screen.dart';
 import 'package:whole_selle_x_application/src/features/home/add_products.dart';
 import 'package:whole_selle_x_application/src/features/home/controlller/home_controller.dart';
 import 'package:whole_selle_x_application/src/features/home/home_page.dart';
@@ -14,7 +14,7 @@ class BottomNavBar extends StatelessWidget {
     const HomeScreen(),
     const AddProductsScreen(),
     const SettingScreen(),
-    const AutionHomeScreen(),
+    const FavoritesScreen(),
   ];
 
   @override
@@ -39,7 +39,7 @@ class BottomNavBar extends StatelessWidget {
           BottomNavigationBarItem(
               icon: Icon(Icons.settings), label: 'Settings'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.currency_exchange_outlined), label: 'Autions'),
+              icon: Icon(Icons.favorite_outline), label: 'Favorit'),
         ],
       ),
     );
