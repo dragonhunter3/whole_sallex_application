@@ -43,8 +43,10 @@ class CustomTextFormField extends StatelessWidget {
   final void Function(String)? onFieldSubmitted;
   final void Function(PointerDownEvent)? onTapOutside;
   final TextEditingController? controller;
-
   final Iterable<String>? autofillHints;
+
+  // New validation function
+  final String? Function(String?)? validator;
 
   const CustomTextFormField({
     super.key,
@@ -88,6 +90,7 @@ class CustomTextFormField extends StatelessWidget {
     this.onTapOutside,
     this.controller,
     this.autofillHints,
+    this.validator, // Accepts a validation function
   });
 
   @override
@@ -102,21 +105,28 @@ class CustomTextFormField extends StatelessWidget {
       maxLines: (obscureText ?? false) ? 1 : (maxline ?? 1),
       textInputAction: inputAction,
       initialValue: initialValue,
-      style: textStyle ?? txtTheme(context).bodyMedium,
+      style: textStyle ??
+          txtTheme(context)
+              .headlineMedium
+              ?.copyWith(color: colorScheme(context).surface),
       autofocus: false,
       keyboardType: keyboardType,
       onChanged: onChanged,
       autovalidateMode: autoValidateMode,
       readOnly: readOnly ?? false,
       enabled: isEnabled ?? true,
+      validator: validator, // Uses the provided validator
       decoration: customDecoration ??
           InputDecoration(
             labelText: labelText,
+            labelStyle: txtTheme(context)
+                .headlineMedium
+                ?.copyWith(color: colorScheme(context).surface),
             counterText: '',
             hintText: hint,
             hintStyle: GoogleFonts.sora(
                 color: hintColor ?? colorScheme(context).outline,
-                fontSize: hintSize ?? 14),
+                fontSize: hintSize ?? 16),
             filled: filled ?? true,
             fillColor:
                 fillColor ?? colorScheme(context).onSurface.withOpacity(0.05),
@@ -134,38 +144,35 @@ class CustomTextFormField extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: borderColor ??
-                    colorScheme(context).onSurface.withOpacity(0.1),
+                    colorScheme(context).surface.withOpacity(0.1),
                 width: 1,
               ),
-              borderRadius: BorderRadius.circular(borderRadius ?? 8),
+              borderRadius: BorderRadius.circular(borderRadius ?? 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: focusBorderColor ?? colorScheme(context).primary,
-                width: 1,
+                color: focusBorderColor ??
+                    colorScheme(context).primary.withOpacity(0.4),
               ),
-              borderRadius: BorderRadius.circular(borderRadius ?? 8),
+              borderRadius: BorderRadius.circular(borderRadius ?? 2),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: colorScheme(context).outline,
-                width: 1,
+                color: colorScheme(context).primary,
               ),
-              borderRadius: BorderRadius.circular(borderRadius ?? 8),
+              borderRadius: BorderRadius.circular(borderRadius ?? 2),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: colorScheme(context).outline,
-                width: 1,
+                color: colorScheme(context).primary.withOpacity(0.1),
               ),
-              borderRadius: BorderRadius.circular(borderRadius ?? 8),
+              borderRadius: BorderRadius.circular(borderRadius ?? 2),
             ),
             disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: colorScheme(context).outline,
-                width: 1,
+                color: colorScheme(context).primary.withOpacity(0.3),
               ),
-              borderRadius: BorderRadius.circular(borderRadius ?? 8),
+              borderRadius: BorderRadius.circular(borderRadius ?? 2),
             ),
           ),
       onFieldSubmitted: onFieldSubmitted,
@@ -175,203 +182,4 @@ class CustomTextFormField extends StatelessWidget {
           },
     );
   }
-
-//   String? _validateInput(String? value) {
-//     switch (validationType) {
-//       case ValidationType.email:
-//         if (value == null || !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-//           return 'please_enter_a_valid_email_address'.tr();
-//         }
-//         break;
-//       case ValidationType.password:
-//         if (value == null || value.length < 8) {
-//           return 'Password'.tr();
-//         }
-//         break;
-//       case ValidationType.phoneNumber:
-//         if (value == null || !RegExp(r'^\d{10,11}$').hasMatch(value)) {
-//           return 'please_enter_a_valid_phone_number'.tr();
-//         }
-//         break;
-//       case ValidationType.username:
-//         if (value == null || value.isEmpty) {
-//           return 'Username_is_required'.tr();
-//         }
-//         if (value.length < 3 || !RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
-//           return 'validate'.tr();
-//         }
-//         break;
-//       case ValidationType.bio:
-//         if (value == null || value.length < 10) {
-//           return 'bio'.tr();
-//         }
-//         break;
-//       case ValidationType.name:
-//         if (value == null || !RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-//           return 'vname'.tr();
-//         }
-//         break;
-//       case ValidationType.url:
-//         if (value == null ||
-//             !RegExp(r'^(https?|ftp)://[^\s/$.?#].[^\s]*$').hasMatch(value)) {
-//           return 'url'.tr();
-//         }
-//         break;
-//       case ValidationType.number:
-//         if (value == null || !RegExp(r'^\d+$').hasMatch(value)) {
-//           return 'vnmumber'.tr();
-//         }
-//         break;
-//       case ValidationType.age:
-//         int? age = int.tryParse(value ?? '');
-//         if (age == null || age < 10 || age > 100) {
-//           return 'vage'.tr();
-//         }
-//         break;
-//       case ValidationType.dateOfBirth:
-//         if (value == null || !RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
-//           return 'vbirth'.tr();
-//         }
-//         break;
-//       case ValidationType.about:
-//         if (value == null || value.length < 10) {
-//           return 'morinfo'.tr();
-//         }
-//         break;
-//       case ValidationType.playerNumber:
-//         int? playerNumber = int.tryParse(value ?? '');
-//         if (playerNumber == null || playerNumber < 1 || playerNumber > 99) {
-//           return 'playernum'.tr();
-//         }
-//         break;
-//       case ValidationType.height:
-//         double? height = double.tryParse(value ?? '');
-//         if (height == null || height < 50 || height > 250) {
-//           return 'height'.tr();
-//         }
-//         break;
-//       case ValidationType.weight:
-//         double? weight = double.tryParse(value ?? '');
-//         if (weight == null || weight < 30 || weight > 200) {
-//           return 'weight'.tr();
-//         }
-//         break;
-//       case ValidationType.jerseySize:
-//         if (value == null || !RegExp(r'^(S|M|L|XL|XXL)$').hasMatch(value)) {
-//           return 'size'.tr();
-//         }
-//         break;
-//       case ValidationType.position:
-//         List<String> validPositions = [
-//           'Forward',
-//           'Midfielder',
-//           'Defender',
-//           'Goalkeeper'
-//         ];
-//         if (value == null || !validPositions.contains(value)) {
-//           return 'position'.tr();
-//         }
-//         break;
-//       case ValidationType.teamName:
-//         if (value == null || value.length < 3) {
-//           return 'teamn'.tr();
-//         }
-//         break;
-//       case ValidationType.playerClub:
-//         if (value == null || value.isEmpty) {
-//           return 'club'.tr();
-//         }
-//         break;
-//       case ValidationType.playerCenter:
-//         if (value == null || value.isEmpty) {
-//           return 'center'.tr();
-//         }
-//         break;
-//       case ValidationType.playerScout:
-//         if (value == null || value.isEmpty) {
-//           return 'scout'.tr();
-//         }
-//         break;
-//       case ValidationType.address:
-//         if (value == null || value.length < 5) {
-//           return 'address'.tr();
-//         }
-//         break;
-//       case ValidationType.playerGrade:
-//         if (value == null || !RegExp(r'^[A-F]$').hasMatch(value)) {
-//           return 'grade'.tr();
-//         }
-//         break;
-//       case ValidationType.scoutGrade:
-//         if (value == null || !RegExp(r'^[A-F]$').hasMatch(value)) {
-//           return 'sgrade'.tr();
-//         }
-//         break;
-//       case ValidationType.scoutClub:
-//         if (value == null || value.isEmpty) {
-//           return 'sclub'.tr();
-//         }
-//         if (value.length < 3) {
-//           return 'sname'.tr();
-//         }
-//         break;
-//       case ValidationType.report:
-//         if (value == null || value.length < 10) {
-//           return 'report'.tr();
-//         }
-//         break;
-//       case ValidationType.empty:
-//         if (value == null || value.isEmpty) {
-//           return 'frequird'.tr();
-//         }
-//         break;
-//       default:
-//         return null;
-//     }
-//     return null;
-//   }
-
-//   List<TextInputFormatter> _getInputFormatters() {
-//     return <TextInputFormatter>[];
-//   }
-
-//   TextTheme txtTheme(BuildContext context) {
-//     return Theme.of(context).textTheme;
-//   }
-
-//   ColorScheme colorScheme(BuildContext context) {
-//     return Theme.of(context).colorScheme;
-//   }
-// }
-
-// enum ValidationType {
-//   none,
-//   email,
-//   password,
-//   phoneNumber,
-//   cnic,
-//   name,
-//   url,
-//   number,
-//   age,
-//   dateOfBirth,
-//   about,
-//   bio,
-//   username,
-//   playerNumber,
-//   height,
-//   weight,
-//   jerseySize,
-//   position,
-//   teamName,
-//   playerClub,
-//   playerCenter,
-//   playerScout,
-//   address,
-//   playerGrade,
-//   scoutGrade,
-//   scoutClub,
-//   report,
-//   empty,
-// }
 }
