@@ -9,6 +9,7 @@ import 'package:whole_selle_x_application/src/features/introduction_screes/contr
 import 'package:whole_selle_x_application/src/features/items_screen/controller/items_controller.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/controller/select_color_controller.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/controller/size_controller.dart';
+import 'package:whole_selle_x_application/src/features/rating_and_reviw/controller.dart/checking_controller.dart';
 import 'package:whole_selle_x_application/src/features/setting/controller/setting_controller.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 import 'package:whole_selle_x_application/src/theme/them.dart'; // Import your GoRouter config
@@ -53,6 +54,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SizeProvider>(
           create: (_) => SizeProvider(),
+        ),
+        ChangeNotifierProvider<CheckingController>(
+          create: (_) => CheckingController(),
         ),
       ],
       child: MaterialApp.router(

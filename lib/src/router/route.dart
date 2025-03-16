@@ -16,6 +16,7 @@ import 'package:whole_selle_x_application/src/features/home/user_profile.dart';
 import 'package:whole_selle_x_application/src/features/introduction_screes/introduction_one.dart';
 import 'package:whole_selle_x_application/src/features/auth/login_screen.dart';
 import 'package:whole_selle_x_application/src/features/notifications/notifications.dart';
+import 'package:whole_selle_x_application/src/features/rating_and_reviw/rating_screen.dart';
 import 'package:whole_selle_x_application/src/router/error_route.dart';
 import 'package:whole_selle_x_application/src/router/route_transition.dart';
 
@@ -167,6 +168,15 @@ class MyAppRouter {
           child: DetailScreenItems(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.ratingpage,
+        path: '/${AppRoute.ratingpage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: RatingScreen(),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -198,4 +208,5 @@ class AppRoute {
   static const String brandpage = 'brands';
   static const String favorit = 'favorit-screen';
   static const String detailpage = 'detail-screen';
+  static const String ratingpage = 'rating-screen';
 }
