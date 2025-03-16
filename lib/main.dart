@@ -7,6 +7,8 @@ import 'package:whole_selle_x_application/src/features/filters/controllers/filte
 import 'package:whole_selle_x_application/src/features/home/controlller/home_controller.dart';
 import 'package:whole_selle_x_application/src/features/introduction_screes/controller/introduction_provider.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/controller/items_controller.dart';
+import 'package:whole_selle_x_application/src/features/items_screen/controller/select_color_controller.dart';
+import 'package:whole_selle_x_application/src/features/items_screen/controller/size_controller.dart';
 import 'package:whole_selle_x_application/src/features/setting/controller/setting_controller.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 import 'package:whole_selle_x_application/src/theme/them.dart'; // Import your GoRouter config
@@ -45,6 +47,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SelectedItemProvider>(
           create: (_) => SelectedItemProvider(),
+        ),
+        ChangeNotifierProvider<SelectedColorProvider>(
+          create: (_) => SelectedColorProvider(),
+        ),
+        ChangeNotifierProvider<SizeProvider>(
+          create: (_) => SizeProvider(),
         ),
       ],
       child: MaterialApp.router(

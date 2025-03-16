@@ -213,9 +213,35 @@ List<Items> myItems = [
       )),
 ];
 List<DropdownMenuItem<String>> colorOfItems = [
-  DropdownMenuItem(child: Text("Black")),
-  DropdownMenuItem(child: Text("Green")),
-  DropdownMenuItem(child: Text("White")),
-  DropdownMenuItem(child: Text("Red")),
-  DropdownMenuItem(child: Text("Yellow")),
+  DropdownMenuItem(
+    child: Text("Black",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15)),
+    value: "Black",
+  ),
+  DropdownMenuItem(
+    child: Text("Green",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15)),
+    value: "Green",
+  ),
+  DropdownMenuItem(
+    child: Text("White",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15)),
+    value: "White",
+  ),
+  DropdownMenuItem(
+    child: Text("Red",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15)),
+    value: "Red",
+  ),
+  DropdownMenuItem(
+    child: Text("Yellow",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15)),
+    value: "Yellow",
+  ),
 ];
+List<String> mysizelist = ["XS", "S", "M", "L", "XL"];
