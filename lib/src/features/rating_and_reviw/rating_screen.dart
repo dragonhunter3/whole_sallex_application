@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/controller/items_controller.dart';
 import 'package:whole_selle_x_application/src/features/rating_and_reviw/controller.dart/checking_controller.dart';
+import 'package:whole_selle_x_application/src/features/rating_and_reviw/widgets/rating_bottom_sheet.dart';
 
 class RatingScreen extends StatefulWidget {
   const RatingScreen({super.key});
@@ -30,6 +31,37 @@ class _RatingScreenState extends State<RatingScreen> {
               ),
         ),
         centerTitle: true,
+      ),
+      floatingActionButton: GestureDetector(
+        onTap: () {
+          showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            builder: (context) {
+              return CustomRatingBottomSheet();
+            },
+          );
+        },
+        child: Container(
+          height: 40,
+          width: 120,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: colorScheme(context).primary,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Icon(Icons.edit, size: 20, color: colorScheme(context).onPrimary),
+              Text(
+                "Write a review",
+                style: txtTheme(context)
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -240,8 +272,6 @@ class _RatingScreenState extends State<RatingScreen> {
             ),
           ),
           const SizedBox(width: 10),
-
-          // Progress Bar
           Expanded(
             child: LinearProgressIndicator(
               value: starCount / 5,
@@ -252,8 +282,6 @@ class _RatingScreenState extends State<RatingScreen> {
             ),
           ),
           const SizedBox(width: 10),
-
-          // Rating Count Text
           Text(
             "$count",
             style: const TextStyle(
@@ -267,7 +295,6 @@ class _RatingScreenState extends State<RatingScreen> {
     );
   }
 
-  /// Builds a checkbox for filtering reviews with photos
   Widget _buildPhotoFilterCheckbox() {
     return Consumer<CheckingController>(
       builder: (context, value, child) {
