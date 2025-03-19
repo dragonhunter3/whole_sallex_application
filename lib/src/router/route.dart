@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/bottom_nav.dart';
 import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
+import 'package:whole_selle_x_application/src/features/checkout/pages/checkout.dart';
 import 'package:whole_selle_x_application/src/features/favorites/favorit_screen.dart';
 import 'package:whole_selle_x_application/src/features/filters/brands.dart';
 import 'package:whole_selle_x_application/src/features/filters/filter_screen.dart';
@@ -177,6 +178,15 @@ class MyAppRouter {
           child: RatingScreen(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.checkoutpage,
+        path: '/${AppRoute.checkoutpage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: CheckoutScreen(),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -209,4 +219,5 @@ class AppRoute {
   static const String favorit = 'favorit-screen';
   static const String detailpage = 'detail-screen';
   static const String ratingpage = 'rating-screen';
+  static const String checkoutpage = 'checkout';
 }

@@ -3,14 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
-import 'package:whole_selle_x_application/src/features/items_screen/controller/size_controller.dart';
-import 'package:whole_selle_x_application/src/features/items_screen/widgets/list_of_items.dart';
+import 'package:whole_selle_x_application/src/features/items_screen/controller/items_controller.dart';
 
 class CustomBottom extends StatelessWidget {
   const CustomBottom({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final selectedItemProvider = Provider.of<SelectedItemProvider>(context);
+    final item = selectedItemProvider.selectedItem;
     return BottomSheet(
       onClosing: () {},
       builder: (context) {
@@ -39,51 +40,45 @@ class CustomBottom extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 15),
-              Consumer<SizeProvider>(
-                builder: (context, sizeProvider, child) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.13,
-                    width: MediaQuery.of(context).size.width,
-                    child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 3,
-                        crossAxisSpacing: 15,
-                        mainAxisSpacing: 15,
-                      ),
-                      itemCount: mysizelist.length,
-                      itemBuilder: (context, index) {
-                        String size = mysizelist[index];
-                        bool isSelected = sizeProvider.selectedSize == size;
-                        return GestureDetector(
-                          onTap: () {
-                            sizeProvider.selectSize(size);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: isSelected
-                                    ? colorScheme(context).primary
-                                    : Colors.black.withOpacity(0.5),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                size,
-                                style: txtTheme(context)
-                                    .headlineSmall
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: colorScheme(context).surface),
-                              ),
-                            ),
-                          ),
-                        );
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.13,
+                width: MediaQuery.of(context).size.width,
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 3,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                  ),
+                  itemCount: item!.availableSizes.length,
+                  itemBuilder: (context, index) {
+                    String size = item.availableSizes[index];
+                    bool isSelected = selectedItemProvider.selectedSize == size;
+                    return GestureDetector(
+                      onTap: () {
+                        selectedItemProvider.selectSize(size);
                       },
-                    ),
-                  );
-                },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isSelected
+                                ? colorScheme(context).primary
+                                : Colors.black.withOpacity(0.5),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            size,
+                            style: txtTheme(context).headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme(context).surface),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
               ListTile(
                 title: Text("Size Info",
@@ -97,7 +92,7 @@ class CustomBottom extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 10),
-              Consumer<SizeProvider>(
+              Consumer<SelectedItemProvider>(
                 builder: (context, sizeProvider, child) {
                   return CustomGradientButton(
                     onPressed: () {
@@ -123,7 +118,6 @@ class CustomBottom extends StatelessWidget {
                           )),
                         );
                       }
-                      context.pop();
                     },
                     buttonText: "ADD TO CART",
                   );

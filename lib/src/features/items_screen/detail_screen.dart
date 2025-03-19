@@ -3,10 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
+import 'package:whole_selle_x_application/src/features/checkout/controller/checkout_controller.dart';
 import 'package:whole_selle_x_application/src/features/favorites/controller/favorit_controller.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/controller/items_controller.dart';
-import 'package:whole_selle_x_application/src/features/items_screen/controller/select_color_controller.dart';
-import 'package:whole_selle_x_application/src/features/items_screen/controller/size_controller.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/widgets/bottom_sheet.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/widgets/list_of_items.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
@@ -22,7 +21,6 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
   @override
   Widget build(BuildContext context) {
     final selectedItemProvider = Provider.of<SelectedItemProvider>(context);
-    final selectedColorpro = Provider.of<SelectedColorProvider>(context);
     final favoriteProvider = Provider.of<FavoritesProvider>(context);
     final item = selectedItemProvider.selectedItem;
 
@@ -77,17 +75,12 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Consumer<SizeProvider>(
-                            builder: (context, value, child) {
-                              return Text(
-                                value.selectedSize ?? "null",
-                                style: txtTheme(context)
-                                    .headlineSmall
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: colorScheme(context).surface),
-                              );
-                            },
+                          Text(
+                            selectedItemProvider.selectedItem?.selectedSize ??
+                                "L",
+                            style: txtTheme(context).headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme(context).surface),
                           ),
                           Icon(
                             Icons.arrow_drop_down_outlined,
@@ -108,10 +101,16 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         dropdownColor: colorScheme(context).onPrimary,
-                        value: selectedColorpro.selecteColor,
-                        items: colorOfItems,
+                        value: selectedItemProvider.selecteColor,
+                        isExpanded: true,
+                        items: item.availableSizes.map((String size) {
+                          return DropdownMenuItem<String>(
+                            value: size,
+                            child: Text(size),
+                          );
+                        }).toList(),
                         onChanged: (value) {
-                          selectedColorpro.setSelectedColor(value!);
+                          selectedItemProvider.setSelectedColor(value!);
                         },
                       ),
                     ),
@@ -121,10 +120,7 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
                       final isFavorite = favoriteProvider.isFavorite(item.id);
                       return GestureDetector(
                         onTap: () {
-                          if (item != null) {
-                            favoriteProvider.toggleFavorite(
-                                item.id); // Ensure 'id' is an integer
-                          }
+                          favoriteProvider.toggleFavorite(item.id);
                         },
                         child: CircleAvatar(
                           backgroundColor: Colors.white,
@@ -180,7 +176,16 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
                     color: colorScheme(context).surface.withOpacity(0.6)),
               ),
               SizedBox(height: 10),
-              CustomGradientButton(onPressed: () {}, buttonText: "ADD TO CART"),
+              Consumer<CheckoutController>(
+                builder: (context, value, child) {
+                  return CustomGradientButton(
+                      onPressed: () {
+                        value.toggleCheckout(item.id);
+                        context.pushNamed(AppRoute.checkoutpage);
+                      },
+                      buttonText: "ADD TO CART");
+                },
+              ),
               SizedBox(height: 15),
               customTile(
                   "Shipping info",
