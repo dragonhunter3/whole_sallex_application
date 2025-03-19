@@ -19,4 +19,27 @@ class SelectedItemProvider with ChangeNotifier {
     _selectedColor = color;
     notifyListeners();
   }
+
+  String? _selectedSize;
+
+  String? get selectedSize => _selectedSize;
+
+  void selectSize(String size) {
+    _selectedSize = size;
+
+    if (_selectedItem != null) {
+      _selectedItem!.selectedSize = size;
+    }
+
+    notifyListeners();
+  }
+
+  String _selecteColor = "Black";
+
+  String get selecteColor => _selecteColor;
+
+  void setSelectedColor(String newColor) {
+    _selecteColor = newColor;
+    notifyListeners();
+  }
 }

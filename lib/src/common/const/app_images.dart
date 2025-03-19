@@ -14,6 +14,9 @@ class AppImages {
   static String anothershirt = 'assets/images/anothershirt.png';
   static String menshirt = 'assets/images/menshirt.jpg';
   static String whiteshirt = 'assets/images/whiteshirt.jpg';
+  static String shahidpic = 'assets/images/shahidkha.jpeg';
+  static String ahmadpic = 'assets/images/ahmad.jpeg';
+  static String basitpic = 'assets/images/basit.jpeg';
 }
 
 class AppIcons {

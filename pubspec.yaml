@@ -40,6 +40,8 @@ dependencies:
   navbar_router: ^0.7.6
   carousel_slider: ^5.0.0
   flutter_svg: ^2.0.17
+  lucide_icons: ^0.257.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
