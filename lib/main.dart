@@ -8,7 +8,6 @@ import 'package:whole_selle_x_application/src/features/filters/controllers/filte
 import 'package:whole_selle_x_application/src/features/home/controlller/home_controller.dart';
 import 'package:whole_selle_x_application/src/features/introduction_screes/controller/introduction_provider.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/controller/items_controller.dart';
-import 'package:whole_selle_x_application/src/features/items_screen/controller/select_color_controller.dart';
 import 'package:whole_selle_x_application/src/features/rating_and_reviw/controller.dart/checking_controller.dart';
 import 'package:whole_selle_x_application/src/features/rating_and_reviw/controller.dart/rating_controller.dart';
 import 'package:whole_selle_x_application/src/features/setting/controller/setting_controller.dart';
@@ -49,9 +48,6 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SelectedItemProvider>(
           create: (_) => SelectedItemProvider(),
-        ),
-        ChangeNotifierProvider<SelectedColorProvider>(
-          create: (_) => SelectedColorProvider(),
         ),
         ChangeNotifierProvider<CheckingController>(
           create: (_) => CheckingController(),

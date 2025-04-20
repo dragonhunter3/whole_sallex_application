@@ -103,14 +103,19 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
                         dropdownColor: colorScheme(context).onPrimary,
                         value: selectedItemProvider.selecteColor,
                         isExpanded: true,
-                        items: item.availableSizes.map((String size) {
+                        items: item.availableColors.map((String color) {
                           return DropdownMenuItem<String>(
-                            value: size,
-                            child: Text(size),
+                            value: color,
+                            child: Text(color,
+                                style:
+                                    txtTheme(context).headlineSmall?.copyWith(
+                                          color: colorScheme(context).surface,
+                                        )),
                           );
                         }).toList(),
                         onChanged: (value) {
                           selectedItemProvider.setSelectedColor(value!);
+                          print(item.selectedColor);
                         },
                       ),
                     ),
