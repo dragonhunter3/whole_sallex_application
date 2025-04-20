@@ -103,28 +103,31 @@ class _MainCategoryPageState extends State<MainCategoryPage> {
             child: ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
-                return Card(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    color: Colors.white,
-                    height: 100,
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          items[index],
-                          style: txtTheme(context).displayMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme(context).surface,
-                              ),
-                        ),
-                        Image.asset(
-                          AppImages.aution,
-                          cacheHeight: 70,
-                          cacheWidth: 70,
-                        )
-                      ],
+                return GestureDetector(
+                  onTap: () => context.pushNamed(AppRoute.itempage),
+                  child: Card(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      color: Colors.white,
+                      height: 100,
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            items[index],
+                            style: txtTheme(context).displayMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme(context).surface,
+                                ),
+                          ),
+                          Image.asset(
+                            AppImages.aution,
+                            cacheHeight: 70,
+                            cacheWidth: 70,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 );

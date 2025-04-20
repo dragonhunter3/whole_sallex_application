@@ -3,7 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/bottom_nav.dart';
 import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
+import 'package:whole_selle_x_application/src/features/checkout/pages/add_payment_method.dart';
+import 'package:whole_selle_x_application/src/features/checkout/pages/address_screen.dart';
 import 'package:whole_selle_x_application/src/features/checkout/pages/checkout.dart';
+import 'package:whole_selle_x_application/src/features/checkout/pages/complete_order_screen.dart';
+import 'package:whole_selle_x_application/src/features/checkout/pages/edit_address_screen.dart';
+import 'package:whole_selle_x_application/src/features/checkout/pages/submit_order.dart';
 import 'package:whole_selle_x_application/src/features/favorites/favorit_screen.dart';
 import 'package:whole_selle_x_application/src/features/filters/brands.dart';
 import 'package:whole_selle_x_application/src/features/filters/filter_screen.dart';
@@ -187,6 +192,51 @@ class MyAppRouter {
           child: CheckoutScreen(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.addpayment,
+        path: '/${AppRoute.addpayment}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: AddPaymentMethod(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.addresspage,
+        path: '/${AppRoute.addresspage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: AddressScreen(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.submitorderpage,
+        path: '/${AppRoute.submitorderpage}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: SubmitOrderScreen(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.editaddress,
+        path: '/${AppRoute.editaddress}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: EditAddressScreen(),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.completeorder,
+        path: '/${AppRoute.completeorder}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: CompleteOrderScreen(),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -220,4 +270,9 @@ class AppRoute {
   static const String detailpage = 'detail-screen';
   static const String ratingpage = 'rating-screen';
   static const String checkoutpage = 'checkout';
+  static const String addpayment = 'add-payment-method';
+  static const String addresspage = 'address-screen';
+  static const String submitorderpage = 'submit-order';
+  static const String editaddress = 'edit-address-screen';
+  static const String completeorder = 'complete-order-screen';
 }

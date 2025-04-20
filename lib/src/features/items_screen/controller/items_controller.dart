@@ -11,14 +11,14 @@ class SelectedItemProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  String? _selectedColor;
+  // String? _selectedColor;
 
-  String? get selectedColor => _selectedColor;
+  // String? get selectedColor => _selectedColor;
 
-  void setColor(String? color) {
-    _selectedColor = color;
-    notifyListeners();
-  }
+  // void setColor(String? color) {
+  //   _selectedColor = color;
+  //   notifyListeners();
+  // }
 
   String? _selectedSize;
 
@@ -34,12 +34,17 @@ class SelectedItemProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  String _selecteColor = "Black";
+  String? _selecteColor;
 
-  String get selecteColor => _selecteColor;
+  String? get selecteColor => _selecteColor;
 
-  void setSelectedColor(String newColor) {
-    _selecteColor = newColor;
+  void setSelectedColor(String color) {
+    _selecteColor = color;
+
+    if (_selectedItem != null) {
+      _selectedItem!.selectedColor = color;
+    }
+
     notifyListeners();
   }
 }
