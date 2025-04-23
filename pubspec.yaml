@@ -42,6 +42,7 @@ dependencies:
   flutter_svg: ^2.0.17
   lucide_icons: ^0.257.0
   image_picker: ^1.1.2
+  
 
 dev_dependencies:
   flutter_test:

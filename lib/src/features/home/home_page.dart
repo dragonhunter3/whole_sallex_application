@@ -26,26 +26,30 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: colorScheme(context).onPrimary,
           actions: [
             SizedBox(width: 16),
-            SizedBox(
-              height: 70,
-              width: 250,
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(
-                  backgroundColor: colorScheme(context).primary,
-                  radius: 20,
-                ),
-                subtitle: Text(
-                  "Muhammad Shahid",
-                  style: txtTheme(context).headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme(context).surface),
-                ),
-                title: Text(
-                  "Hello",
-                  style: txtTheme(context)
-                      .headlineSmall
-                      ?.copyWith(color: colorScheme(context).surface),
+            GestureDetector(
+              onTap: () {},
+              child: SizedBox(
+                height: 70,
+                width: 250,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage(AppImages.ahmadpic),
+                    radius: 20,
+                  ),
+                  subtitle: Text(
+                    "Muhammad Shahid",
+                    style: txtTheme(context).headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme(context).surface),
+                  ),
+                  title: Text(
+                    "Hello",
+                    style: txtTheme(context)
+                        .headlineSmall
+                        ?.copyWith(color: colorScheme(context).surface),
+                  ),
+                  onTap: () => context.pushNamed(AppRoute.profilescreen),
                 ),
               ),
             ),
@@ -75,20 +79,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   hint: "Search anything",
                 ),
                 SizedBox(height: 10),
-                CarouselSlider(
-                  carouselController: _carouselSliderController,
-                  items: items.map((item) => SizedBox(child: item)).toList(),
-                  options: CarouselOptions(
-                    height: 200,
-                    aspectRatio: 16 / 9,
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                    autoPlayInterval: Duration(seconds: 3),
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _currentIndex = index;
-                      });
-                    },
+                GestureDetector(
+                  onTap: () {
+                    context.pushNamed(AppRoute.biddingmain);
+                  },
+                  child: CarouselSlider(
+                    carouselController: _carouselSliderController,
+                    items: items.map((item) => SizedBox(child: item)).toList(),
+                    options: CarouselOptions(
+                      height: 200,
+                      aspectRatio: 16 / 9,
+                      enlargeCenterPage: true,
+                      autoPlay: true,
+                      autoPlayInterval: Duration(seconds: 3),
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 Row(
