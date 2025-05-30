@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
-import 'package:whole_selle_x_application/src/features/checkout/widgets/add_card_bottom_sheet.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 
 class SubmitOrderScreen extends StatefulWidget {
@@ -18,6 +17,7 @@ class _SubmitOrderScreenState extends State<SubmitOrderScreen> {
   TextEditingController cvvController = TextEditingController();
   TextEditingController expireController = TextEditingController();
   TextEditingController numberController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,20 +80,7 @@ class _SubmitOrderScreenState extends State<SubmitOrderScreen> {
                           fontWeight: FontWeight.bold,
                           color: colorScheme(context).surface)),
                   TextButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (context) {
-                            return CustomBottomSheetCard(
-                              nameController: nameController,
-                              cvvController: cvvController,
-                              expireController: expireController,
-                              numberController: numberController,
-                            );
-                          },
-                        );
-                      },
+                      onPressed: () {},
                       child: Text(
                         "Change",
                         style: txtTheme(context).headlineSmall?.copyWith(

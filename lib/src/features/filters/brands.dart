@@ -5,7 +5,6 @@ import 'package:whole_selle_x_application/src/common/const/global_variables.dart
 import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
 import 'package:whole_selle_x_application/src/features/filters/controllers/brand_controller.dart';
 import 'package:whole_selle_x_application/src/features/filters/controllers/filter_controller.dart';
-import 'package:whole_selle_x_application/src/router/route.dart';
 
 class BrandsScreen extends StatefulWidget {
   const BrandsScreen({super.key});

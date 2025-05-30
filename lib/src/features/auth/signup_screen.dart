@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_textform_filed.dart';
 import 'package:whole_selle_x_application/src/common/widgets/validations.dart';
+import 'package:whole_selle_x_application/src/features/auth/model/usermodel.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -24,6 +28,18 @@ class SignUpScreenState extends State<SignUpScreen> {
 
   void _signUp() {
     if (_formKey.currentState!.validate()) {
+      Uuid uid = Uuid();
+      String userid = uid.v4();
+      Usermodel model = Usermodel(
+          name: nameController.text.toString(),
+          email: emailController.text.toString(),
+          password: passwordController.text.toString(),
+          userid: userid);
+      FirebaseFirestore.instance
+          .collection("customers")
+          .doc(userid)
+          .set(model.toMap());
+      context.pushNamed(AppRoute.bottom);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
@@ -54,8 +70,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                         fontWeight: FontWeight.bold,
                         color: colorScheme(context).surface)),
                 const SizedBox(height: 20),
-
-                /// **Name Field**
                 Row(
                   children: [
                     Column(
@@ -80,8 +94,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                   ],
                 ),
                 const SizedBox(height: 15),
-
-                /// **Email Field**
                 Row(
                   children: [
                     Column(
@@ -106,8 +118,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                   ],
                 ),
                 const SizedBox(height: 15),
-
-                /// **Password Field**
                 Row(
                   children: [
                     Column(
