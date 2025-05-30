@@ -5,6 +5,8 @@ import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
 import 'package:whole_selle_x_application/src/features/bidding_screens/pages/bidding_main_page.dart';
 import 'package:whole_selle_x_application/src/features/bidding_screens/pages/start_bidding.dart';
+import 'package:whole_selle_x_application/src/features/categories/model/model.dart';
+import 'package:whole_selle_x_application/src/features/chatScreen/chat_users.dart';
 import 'package:whole_selle_x_application/src/features/checkout/pages/add_payment_method.dart';
 import 'package:whole_selle_x_application/src/features/checkout/pages/address_screen.dart';
 import 'package:whole_selle_x_application/src/features/checkout/pages/checkout.dart';
@@ -135,14 +137,18 @@ class MyAppRouter {
         ),
       ),
       GoRoute(
-        name: AppRoute.itempage,
-        path: '/${AppRoute.itempage}',
-        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
-          context: context,
-          state: state,
-          child: ItemScreenPage(),
-        ),
-      ),
+          name: AppRoute.itempage,
+          path: '/${AppRoute.itempage}',
+          pageBuilder: (context, state) {
+            final products = state.extra as List<ProductModel>;
+            return buildPageWithFadeTransition<void>(
+              context: context,
+              state: state,
+              child: ItemScreenPage(
+                products: products,
+              ),
+            );
+          }),
       GoRoute(
         name: AppRoute.filterpage,
         path: '/${AppRoute.filterpage}',
@@ -171,14 +177,16 @@ class MyAppRouter {
         ),
       ),
       GoRoute(
-        name: AppRoute.detailpage,
-        path: '/${AppRoute.detailpage}',
-        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
-          context: context,
-          state: state,
-          child: DetailScreenItems(),
-        ),
-      ),
+          name: AppRoute.detailpage,
+          path: '/${AppRoute.detailpage}',
+          pageBuilder: (context, state) {
+            final String productId = state.extra as String;
+            return buildPageWithFadeTransition<void>(
+              context: context,
+              state: state,
+              child: DetailScreenItems(productId: productId),
+            );
+          }),
       GoRoute(
         name: AppRoute.ratingpage,
         path: '/${AppRoute.ratingpage}',
@@ -287,6 +295,17 @@ class MyAppRouter {
           child: StartBidding(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.chatUsers,
+        path: '/${AppRoute.chatUsers}',
+        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: UsersScreen(
+            currentUserEmail: 'muhammadshahidmalghani10@gmai.com',
+          ),
+        ),
+      ),
     ],
     errorBuilder: (context, state) {
       return const ErrorPage();
@@ -330,4 +349,5 @@ class AppRoute {
   static const String selectedorder = 'selected-order-detail';
   static const String biddingmain = 'bidding-main-page';
   static const String startbid = 'start-bidding';
+  static const String chatUsers = 'chatscreen';
 }

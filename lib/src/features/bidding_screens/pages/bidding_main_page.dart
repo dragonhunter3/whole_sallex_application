@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 
@@ -9,65 +9,104 @@ class BiddingMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var h = MediaQuery.sizeOf(context).height;
-    var w = MediaQuery.sizeOf(context).width;
+    final h = MediaQuery.sizeOf(context).height;
+    final w = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colorScheme(context).onPrimary,
         centerTitle: true,
         iconTheme: IconThemeData(color: colorScheme(context).surface),
         title: Text(
-          "Autions",
+          "Auctions",
           style: txtTheme(context).headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold, color: colorScheme(context).surface),
+                fontWeight: FontWeight.bold,
+                color: colorScheme(context).surface,
+              ),
         ),
         actions: [
-          GestureDetector(
-              onTap: () {}, child: Icon(Icons.history, color: Colors.black)),
-          SizedBox(width: 10),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.history, color: Colors.black),
+          ),
         ],
       ),
       body: Container(
-          height: h,
-          width: w,
-          padding: EdgeInsets.all(16),
-          color: const Color.fromARGB(255, 228, 227, 225),
-          child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                  onTap: () {
-                    context.pushNamed(AppRoute.startbid);
-                  },
-                  child: Container(
+        padding: const EdgeInsets.all(16),
+        color: const Color.fromARGB(255, 228, 227, 225),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('bidding_products')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text("No auction products found"));
+            }
+
+            final products = snapshot.data!.docs;
+
+            return ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final data = products[index].data() as Map<String, dynamic>;
+                final subCategoryName = data['subCategory'] ?? 'Unnamed';
+                final imageUrl = data['imageUrl'] ?? '';
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: InkWell(
+                    onTap: () => context.pushNamed(AppRoute.startbid),
+                    child: Container(
                       height: h * 0.14,
-                      width: w * 0.4,
-                      padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomLeft: Radius.circular(10),
                         ),
                       ),
+                      padding: const EdgeInsets.all(12),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(),
-                          Text("New  ",
+                          if (imageUrl.isNotEmpty)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                imageUrl,
+                                height: 80,
+                                width: 80,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.broken_image, size: 80),
+                              ),
+                            )
+                          else
+                            Icon(Icons.image, size: 80, color: Colors.grey),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              subCategoryName,
                               style: txtTheme(context).headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme(context).surface)),
-                          Image.asset(AppImages.assleries,
-                              cacheHeight: 100, cacheWidth: 100)
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme(context).surface,
+                                  ),
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16),
                         ],
-                      )),
-                ),
-              );
-            },
-          )),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }

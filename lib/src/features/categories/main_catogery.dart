@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/common/const/app_images.dart';
-import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
+import 'package:whole_selle_x_application/src/features/categories/model/model.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 
 class MainCategoryPage extends StatefulWidget {
@@ -12,130 +13,151 @@ class MainCategoryPage extends StatefulWidget {
 }
 
 class _MainCategoryPageState extends State<MainCategoryPage> {
-  final List<String> categories = [
-    "Men",
-    "Women",
-    "Children",
-    "Electronics",
-    "Furniture & Home Decor",
-    "Health & Beauty",
-    "Pharmaceuticals & Medical Supplies"
-  ];
+  late Future<Map<String, Map<String, List<ProductModel>>>> _productsFuture;
 
-  final Map<String, List<String>> categoryItems = {
-    "Men": ["New", "Shoes", "Clothes", "Accessories"],
-    "Women": ["Dresses", "Handbags", "Jewelry", "Makeup"],
-    "Children": ["Toys", "Clothing", "School Supplies", "Games"],
-    "Electronics": ["Smartphones", "Power Banks", "Earphones", "Smartwatches"],
-    "Furniture & Home Decor": ["Sofa", "Bed", "Dining Tables", "Office Chairs"],
-    "Health & Beauty": ["Skincare", "Hair Care", "Makeup", "Wellness"],
-    "Pharmaceuticals & Medical Supplies": [
-      "Medical Equipment",
-      "Medicines",
-      "First Aid",
-      "Health Monitoring"
-    ]
-  };
+  @override
+  void initState() {
+    super.initState();
+    _productsFuture = fetchProductsByCategory();
+  }
+
+  Future<Map<String, Map<String, List<ProductModel>>>>
+      fetchProductsByCategory() async {
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('products').get();
+      final allProducts = snapshot.docs
+          .map((doc) {
+            try {
+              return ProductModel.fromMap(doc.data());
+            } catch (e) {
+              print('Error parsing document ${doc.id}: $e');
+              return null;
+            }
+          })
+          .whereType<ProductModel>()
+          .toList();
+
+      final Map<String, Map<String, List<ProductModel>>> grouped = {};
+
+      for (var product in allProducts) {
+        final category = product.category;
+        final subCategory = product.subCategory;
+
+        grouped.putIfAbsent(category, () => {});
+        grouped[category]!.putIfAbsent(subCategory, () => []);
+        grouped[category]![subCategory]!.add(product);
+      }
+
+      return grouped;
+    } catch (e) {
+      print('Error fetching products: $e');
+      rethrow;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: categories.length,
-      child: Scaffold(
-        backgroundColor: colorScheme(context).onPrimary,
-        appBar: AppBar(
-          iconTheme: IconThemeData(color: colorScheme(context).surface),
-          backgroundColor: colorScheme(context).onPrimary,
-          centerTitle: true,
-          title: Text(
-            "Category",
-            style: txtTheme(context).displayMedium?.copyWith(
-                  color: colorScheme(context).surface,
-                  fontWeight: FontWeight.bold,
-                ),
+    return FutureBuilder<Map<String, Map<String, List<ProductModel>>>>(
+      future: _productsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+              body: Center(child: Text("Error: ${snapshot.error}")));
+        }
+
+        final categoryMap = snapshot.data!;
+        if (categoryMap.isEmpty) {
+          return const Scaffold(
+              body: Center(child: Text("No categories available")));
+        }
+
+        final categories = categoryMap.keys.toList();
+
+        return DefaultTabController(
+          length: categories.length,
+          child: Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+            appBar: AppBar(
+              iconTheme:
+                  IconThemeData(color: Theme.of(context).colorScheme.surface),
+              backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              centerTitle: true,
+              title: Text(
+                "Category",
+                style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.surface,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              actions: [
+                IconButton(
+                    icon: const Icon(Icons.search_outlined),
+                    onPressed: () {
+                      context.pushNamed(AppRoute.itemsScreen);
+                    }),
+              ],
+              bottom: TabBar(
+                isScrollable: true,
+                dividerColor: Theme.of(context).colorScheme.onPrimary,
+                unselectedLabelColor: Colors.black,
+                labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                tabs:
+                    categories.map((category) => Tab(text: category)).toList(),
+              ),
+            ),
+            body: TabBarView(
+              children: categories.map((category) {
+                final subCategoryMap = categoryMap[category]!;
+                return _buildCategoryView(subCategoryMap);
+              }).toList(),
+            ),
           ),
-          actions: [
-            GestureDetector(
-                onTap: () {
-                  context.pushNamed(AppRoute.itemsScreen);
-                },
-                child: Icon(Icons.search_outlined)),
-            SizedBox(width: 20),
-          ],
-          bottom: TabBar(
-            isScrollable: true,
-            dividerColor: colorScheme(context).onPrimary,
-            unselectedLabelColor: Colors.black,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            tabs: categories.map((category) => Tab(text: category)).toList(),
-          ),
-        ),
-        body: TabBarView(
-          children: categories
-              .map((category) => _buildCategoryView(categoryItems[category]!))
-              .toList(),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildCategoryView(List<String> items) {
-    return Padding(
+  Widget _buildCategoryView(Map<String, List<ProductModel>> subCategoryMap) {
+    final subCategories = subCategoryMap.keys.toList();
+
+    return ListView.builder(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.15,
-            width: MediaQuery.of(context).size.width,
-            color: colorScheme(context).primary,
-            child: Center(
-              child: Text(
-                "Summer Sales",
-                style: txtTheme(context).displayMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme(context).onPrimary,
-                    ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => context.pushNamed(AppRoute.itempage),
-                  child: Card(
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      color: Colors.white,
-                      height: 100,
-                      width: MediaQuery.of(context).size.width,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            items[index],
-                            style: txtTheme(context).displayMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme(context).surface,
-                                ),
-                          ),
-                          Image.asset(
-                            AppImages.aution,
-                            cacheHeight: 70,
-                            cacheWidth: 70,
-                          )
-                        ],
-                      ),
-                    ),
+      itemCount: subCategories.length,
+      itemBuilder: (context, index) {
+        final subCategory = subCategories[index];
+
+        return Card(
+          elevation: 2,
+          color: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            title: Text(
+              subCategory,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
-                );
-              },
             ),
+            trailing: Image.asset(
+              AppImages.aution,
+              height: 50,
+              width: 50,
+            ),
+            onTap: () {
+              final products = subCategoryMap[subCategory]!;
+              context.pushNamed(AppRoute.itempage, extra: products);
+            },
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
-import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
 
 class SelectedOrderDetail extends StatefulWidget {
   const SelectedOrderDetail({super.key});

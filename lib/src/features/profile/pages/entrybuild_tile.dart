@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:whole_selle_x_application/src/features/profile/model/entry_model.dart';
 
+// ignore: must_be_immutable
 class EntryItem extends StatelessWidget {
   EntryModel? entry;
   EntryItem({super.key, this.entry});

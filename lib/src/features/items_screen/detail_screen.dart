@@ -1,17 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
-import 'package:whole_selle_x_application/src/features/checkout/controller/checkout_controller.dart';
+import 'package:whole_selle_x_application/src/features/categories/model/model.dart';
 import 'package:whole_selle_x_application/src/features/favorites/controller/favorit_controller.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/controller/items_controller.dart';
+import 'package:whole_selle_x_application/src/features/items_screen/controller/product_provider.dart';
 import 'package:whole_selle_x_application/src/features/items_screen/widgets/bottom_sheet.dart';
-import 'package:whole_selle_x_application/src/features/items_screen/widgets/list_of_items.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 
 class DetailScreenItems extends StatefulWidget {
-  const DetailScreenItems({super.key});
+  final String productId;
+  const DetailScreenItems({super.key, required this.productId});
 
   @override
   State<DetailScreenItems> createState() => _DetailScreenItemsState();
@@ -19,9 +22,36 @@ class DetailScreenItems extends StatefulWidget {
 
 class _DetailScreenItemsState extends State<DetailScreenItems> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProController>(context, listen: false)
+          .fetchProductById(widget.productId);
+    });
+  }
+
+  Future<void> _addToCart(
+      ProductModel product, String? selectedSize, String? selectedColor) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('cardProduct')
+          .doc(product.id)
+          .set({
+        ...product.toMap(),
+        'selectedSize': selectedSize,
+        'selectedColor': selectedColor,
+        'addedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception('Failed to add to cart: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<ProController>(context);
+    final product = controller.product;
     final selectedItemProvider = Provider.of<SelectedItemProvider>(context);
-    final favoriteProvider = Provider.of<FavoritesProvider>(context);
     final item = selectedItemProvider.selectedItem;
 
     return Scaffold(
@@ -30,306 +60,229 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
         iconTheme: IconThemeData(color: colorScheme(context).surface),
         backgroundColor: colorScheme(context).onPrimary,
         title: Text(
-          item!.itemName,
+          product?.title ?? '',
           style: txtTheme(context).headlineMedium?.copyWith(
               fontWeight: FontWeight.bold, color: colorScheme(context).surface),
         ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Image.asset(
-                  item.image,
-                  cacheHeight: 200,
-                  cacheWidth: 200,
-                ),
-              ),
-              SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                        isScrollControlled: true,
-                        context: context,
-                        builder: (context) {
-                          return CustomBottom();
-                        },
-                      );
-                    },
-                    child: Container(
-                      height: 40,
-                      width: 100,
-                      padding: EdgeInsets.only(left: 16, right: 16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border:
-                            Border.all(color: Colors.black.withOpacity(0.4)),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            selectedItemProvider.selectedItem?.selectedSize ??
-                                "L",
-                            style: txtTheme(context).headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme(context).surface),
-                          ),
-                          Icon(
-                            Icons.arrow_drop_down_outlined,
-                            color: Colors.black.withOpacity(0.7),
-                          )
-                        ],
+        child: product == null
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: CachedNetworkImage(
+                        imageUrl: product.imageUrl!,
+                        placeholder: (context, url) =>
+                            Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.error, color: Colors.red),
+                        fit: BoxFit.cover,
+                        height: 130,
+                        width: double.infinity,
                       ),
                     ),
-                  ),
-                  Container(
-                    height: 40,
-                    width: 150,
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.black.withOpacity(0.4)),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        dropdownColor: colorScheme(context).onPrimary,
-                        value: selectedItemProvider.selecteColor,
-                        isExpanded: true,
-                        items: item.availableColors.map((String color) {
-                          return DropdownMenuItem<String>(
-                            value: color,
-                            child: Text(color,
-                                style:
-                                    txtTheme(context).headlineSmall?.copyWith(
-                                          color: colorScheme(context).surface,
-                                        )),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          selectedItemProvider.setSelectedColor(value!);
-                          print(item.selectedColor);
-                        },
-                      ),
-                    ),
-                  ),
-                  Consumer<FavoritesProvider>(
-                    builder: (context, favoriteProvider, child) {
-                      final isFavorite = favoriteProvider.isFavorite(item.id);
-                      return GestureDetector(
-                        onTap: () {
-                          favoriteProvider.toggleFavorite(item.id);
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          maxRadius: 20,
-                          child: Center(
-                            child: Icon(
-                              isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: isFavorite
-                                  ? Colors.red
-                                  : Colors.black.withOpacity(0.4),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (context) {
+                                return CustomBottom();
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 100,
+                            padding: EdgeInsets.only(left: 16, right: 16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: Colors.black.withOpacity(0.4)),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  selectedItemProvider
+                                          .selectedItem?.selectedSize ??
+                                      "L",
+                                  style: txtTheme(context)
+                                      .headlineSmall
+                                      ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: colorScheme(context).surface),
+                                ),
+                                Icon(
+                                  Icons.arrow_drop_down_outlined,
+                                  color: Colors.black.withOpacity(0.7),
+                                )
+                              ],
                             ),
                           ),
                         ),
-                      );
-                    },
-                  )
-                ],
-              ),
-              SizedBox(height: 15),
-              customRow(item.itemName, item.price),
-              Text(
-                item.brandName,
-                style: txtTheme(context).headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme(context).surface.withOpacity(0.5)),
-              ),
-              GestureDetector(
-                onTap: () {
-                  final selectedItemProvider =
-                      Provider.of<SelectedItemProvider>(context, listen: false);
-                  selectedItemProvider.setSelectedItem(item);
-                  context.pushNamed(AppRoute.ratingpage);
-                },
-                child: Row(
-                  children: [
-                    ...item.star,
-                    SizedBox(width: 5),
-                    Text(
-                      item.numberOfIcons,
-                      style: txtTheme(context).bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme(context).surface.withOpacity(0.5)),
-                    )
-                  ],
-                ),
-              ),
-              Text(
-                item.comment,
-                style: txtTheme(context).headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme(context).surface.withOpacity(0.6)),
-              ),
-              SizedBox(height: 10),
-              Consumer<CheckoutController>(
-                builder: (context, value, child) {
-                  return CustomGradientButton(
-                      onPressed: () {
-                        value.toggleCheckout(item.id);
-                        context.pushNamed(AppRoute.checkoutpage);
-                      },
-                      buttonText: "ADD TO CART");
-                },
-              ),
-              SizedBox(height: 15),
-              customTile(
-                  "Shipping info",
-                  Icon(Icons.arrow_forward_ios,
-                      size: 15, color: colorScheme(context).surface)),
-              SizedBox(height: 10),
-              customTile(
-                  "Support",
-                  Icon(Icons.arrow_forward_ios,
-                      size: 15, color: colorScheme(context).surface)),
-              SizedBox(height: 15),
-              customRow("You can also like this", "12 items"),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: myItems.length,
-                  itemBuilder: (context, index) {
-                    final isFavorite = favoriteProvider.isFavorite(index);
-                    return Padding(
-                      padding: EdgeInsets.all(2),
-                      child: Card(
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.white,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Image.asset(
-                                    myItems[index].image,
-                                    cacheHeight: 140,
-                                    cacheWidth: 152,
+                        Container(
+                          height: 40,
+                          width: 150,
+                          padding: EdgeInsets.only(left: 16, right: 16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: Colors.black.withOpacity(0.4)),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              dropdownColor: colorScheme(context).onPrimary,
+                              value: selectedItemProvider
+                                  .selecteColor, // Typo: should be selectedColor
+                              isExpanded: true,
+                              items: item!.availableColors.map((String color) {
+                                return DropdownMenuItem<String>(
+                                  value: color,
+                                  child: Text(
+                                    color,
+                                    style: txtTheme(context)
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          color: colorScheme(context).surface,
+                                        ),
                                   ),
-                                  Container(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            ...myItems[index].star,
-                                            SizedBox(width: 5),
-                                            Text(
-                                              myItems[index].numberOfIcons,
-                                              style: txtTheme(context)
-                                                  .bodyLarge
-                                                  ?.copyWith(
-                                                      color: colorScheme(
-                                                              context)
-                                                          .surface
-                                                          .withOpacity(0.5)),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          myItems[index].brandName,
-                                          style: txtTheme(context)
-                                              .bodyLarge
-                                              ?.copyWith(
-                                                  color: colorScheme(context)
-                                                      .surface
-                                                      .withOpacity(0.3)),
-                                        ),
-                                        Text(
-                                          myItems[index].itemName,
-                                          style: txtTheme(context)
-                                              .headlineMedium
-                                              ?.copyWith(
-                                                  color: colorScheme(context)
-                                                      .surface),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              myItems[index].price,
-                                              style: txtTheme(context)
-                                                  .headlineMedium
-                                                  ?.copyWith(
-                                                      color:
-                                                          colorScheme(context)
-                                                              .surface),
-                                            ),
-                                            SizedBox(width: 15),
-                                            myItems[index].chatIcon,
-                                            SizedBox(width: 15),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                selectedItemProvider.setSelectedColor(value!);
+                              },
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                onTap: () {
-                                  favoriteProvider.toggleFavorite(index);
-                                },
-                                child: CircleAvatar(
-                                  backgroundColor:
-                                      colorScheme(context).onPrimary,
-                                  radius: 15,
+                          ),
+                        ),
+                        Consumer<FavoritesProvider>(
+                          builder: (context, favoritesProvider, child) {
+                            final isFavorite =
+                                favoritesProvider.isFavorite(product.id);
+                            return GestureDetector(
+                              onTap: () async {
+                                try {
+                                  await favoritesProvider
+                                      .toggleFavorite(product.id);
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Error toggling favorite: $e')),
+                                  );
+                                }
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                maxRadius: 20,
+                                child: Center(
                                   child: Icon(
                                     isFavorite
                                         ? Icons.favorite
                                         : Icons.favorite_border,
-                                    size: 15,
                                     color: isFavorite
                                         ? Colors.red
-                                        : colorScheme(context)
-                                            .surface
-                                            .withOpacity(0.3),
+                                        : Colors.black.withOpacity(0.4),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    customRow(product.title, "PKR ${product.price}"),
+                    Text(
+                      product.subCategory, // Replaced item.brandName
+                      style: txtTheme(context).headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme(context).surface.withOpacity(0.5)),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final selectedItemProvider =
+                            Provider.of<SelectedItemProvider>(context,
+                                listen: false);
+                        selectedItemProvider.setSelectedItem(item);
+                        context.pushNamed(AppRoute.ratingpage);
+                      },
+                      child: Row(
+                        children: [
+                          if (product.rating != null)
+                            Row(
+                              children: List.generate(
+                                product.rating!,
+                                (_) => Icon(
+                                  Icons.star,
+                                  size: 16,
+                                  color: Colors.amber,
+                                ),
+                              ),
+                            ),
+                          SizedBox(width: 5),
+                          Text(
+                            product.rating?.toString() ?? '0',
+                            style: txtTheme(context).bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme(context)
+                                    .surface
+                                    .withOpacity(0.5)),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                    Text(
+                      product.description,
+                      style: txtTheme(context).headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme(context).surface.withOpacity(0.6)),
+                    ),
+                    SizedBox(height: 10),
+                    CustomGradientButton(
+                      onPressed: () async {
+                        try {
+                          await _addToCart(
+                            product,
+                            selectedItemProvider.selectedItem?.selectedSize,
+                            selectedItemProvider.selecteColor,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Added to cart!')),
+                          );
+                          context.pushNamed(AppRoute.checkoutpage);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error adding to cart: $e')),
+                          );
+                        }
+                      },
+                      buttonText: "ADD TO CART",
+                    ),
+                    SizedBox(height: 15),
+                    customTile(
+                      "Shipping info",
+                      Icon(Icons.arrow_forward_ios,
+                          size: 15, color: colorScheme(context).surface),
+                    ),
+                    SizedBox(height: 10),
+                    customTile(
+                      "Support",
+                      Icon(Icons.arrow_forward_ios,
+                          size: 15, color: colorScheme(context).surface),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -361,7 +314,7 @@ class _DetailScreenItemsState extends State<DetailScreenItems> {
           style: txtTheme(context).headlineMedium?.copyWith(
               fontWeight: FontWeight.bold, color: colorScheme(context).surface),
         ),
-        icon
+        icon,
       ],
     );
   }

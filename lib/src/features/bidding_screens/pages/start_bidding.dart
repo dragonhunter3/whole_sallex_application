@@ -148,7 +148,7 @@ class _StartBiddingState extends State<StartBidding> {
                                 ),
                                 SizedBox(
                                   width: w * 0.35,
-                                  height: h * 1,
+                                  height: h * 1, 
                                 )
                               ],
                             ),

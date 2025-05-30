@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
+import 'package:whole_selle_x_application/src/common/const/static_class.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_elevated_button.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_textform_filed.dart';
 import 'package:whole_selle_x_application/src/common/widgets/validations.dart';
+import 'package:whole_selle_x_application/src/features/auth/model/usermodel.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,17 +22,40 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  void login() {
+  void login() async {
     if (_formKey.currentState!.validate()) {
-      context.pushNamed(AppRoute.bottom);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection("customers")
+          .where("email", isEqualTo: emailController.text.trim())
+          .where('password', isEqualTo: passwordController.text.trim())
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            "User Not Found! 🤨",
+            style: txtTheme(context).headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme(context).primary),
+          ),
+        ));
+      } else {
+        Usermodel model =
+            Usermodel.fromMap(snapshot.docs[0].data() as Map<String, dynamic>);
+        StaticData.model = model;
+
+        Future.delayed(Duration(seconds: 1), () {
+          context.pushNamed(AppRoute.bottom);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
-          "Login successful! 🎉",
-          style: txtTheme(context).headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold, color: colorScheme(context).primary),
-        )),
-      );
+              "Login successful! 🎉",
+              style: txtTheme(context).headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme(context).primary),
+            ),
+          ));
+        });
+      }
     }
   }
 
@@ -52,8 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.bold,
                         color: colorScheme(context).surface)),
                 const SizedBox(height: 40),
-
-                /// **Email Field**
                 Row(
                   children: [
                     Column(

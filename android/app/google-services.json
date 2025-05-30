@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "206891758660",
+    "project_id": "wholesellexapplication-542be",
+    "storage_bucket": "wholesellexapplication-542be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206891758660:android:669fce942921593455b811",
+        "android_client_info": {
+          "package_name": "com.shahid.whole_selle_x_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKduvd2vI74fq61OONwsE2dZf06fk5tp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206891758660:android:c7cb9033ac4f7bd055b811",
+        "android_client_info": {
+          "package_name": "com.shahid.whole_sellex_selleradmin_pannel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKduvd2vI74fq61OONwsE2dZf06fk5tp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

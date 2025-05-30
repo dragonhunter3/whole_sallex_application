@@ -1,4 +1,4 @@
-package com.example.whole_selle_x_application
+package com.shahid.whole_selle_x_application
 
 import io.flutter.embedding.android.FlutterActivity
 
