@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/bottom_nav.dart';
 import 'package:whole_selle_x_application/src/features/auth/forgot_screen.dart';
 import 'package:whole_selle_x_application/src/features/auth/signup_screen.dart';
+import 'package:whole_selle_x_application/src/features/bidding_screens/pages/aution_in_starting.dart';
 import 'package:whole_selle_x_application/src/features/bidding_screens/pages/bidding_main_page.dart';
 import 'package:whole_selle_x_application/src/features/bidding_screens/pages/start_bidding.dart';
 import 'package:whole_selle_x_application/src/features/categories/model/model.dart';
@@ -287,14 +288,27 @@ class MyAppRouter {
         ),
       ),
       GoRoute(
-        name: AppRoute.startbid,
-        path: '/${AppRoute.startbid}',
-        pageBuilder: (context, state) => buildPageWithFadeTransition<void>(
-          context: context,
-          state: state,
-          child: StartBidding(),
-        ),
-      ),
+          name: AppRoute.startbid,
+          path: '/${AppRoute.startbid}',
+          pageBuilder: (context, state) {
+            final subCategory = state.uri.queryParameters['subCategory'] ?? '';
+            return buildPageWithFadeTransition<void>(
+              context: context,
+              state: state,
+              child: StartBidding(subCategory: subCategory),
+            );
+          }),
+      GoRoute(
+          name: AppRoute.aution,
+          path: '/${AppRoute.aution}',
+          pageBuilder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>;
+            return buildPageWithFadeTransition<void>(
+              context: context,
+              state: state,
+              child: AuctionScreen(product: extra),
+            );
+          }),
       GoRoute(
         name: AppRoute.chatUsers,
         path: '/${AppRoute.chatUsers}',
@@ -350,4 +364,5 @@ class AppRoute {
   static const String biddingmain = 'bidding-main-page';
   static const String startbid = 'start-bidding';
   static const String chatUsers = 'chatscreen';
+  static const String aution = 'aution-in-starting';
 }

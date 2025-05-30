@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/common/const/app_images.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
 import 'package:whole_selle_x_application/src/common/widgets/custom_textform_filed.dart';
+import 'package:whole_selle_x_application/src/features/home/model/category_list.dart';
 import 'package:whole_selle_x_application/src/features/home/widgets/widgetlist.dart';
 import 'package:whole_selle_x_application/src/router/route.dart';
 
@@ -174,65 +176,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 90,
                   width: MediaQuery.of(context).size.width,
                   child: ListView.builder(
-                    itemCount: 4,
+                    itemCount: category.length,
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Image.asset(
-                            AppImages.facebook,
-                            fit: BoxFit.cover,
-                          ));
-                    },
-                  ),
-                ),
-                textinRow("Most Papular", "show all", () {}),
-                SizedBox(
-                  height: 200,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                    itemCount: 4,
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                      image: AssetImage(AppImages.facebook),
-                                      fit: BoxFit.cover)),
-                            ),
-                          ),
-                          Text(
-                            "Watches",
-                            style: txtTheme(context).displaySmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme(context).surface),
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Text(
-                                "\$ 400",
-                                style: txtTheme(context).displaySmall?.copyWith(
-                                    color: colorScheme(context).primary),
-                              ),
-                              SizedBox(width: 30),
-                              Icon(
-                                Icons.chat,
-                                color: colorScheme(context).primary,
-                              )
-                            ],
-                          )
-                        ],
+                        padding: const EdgeInsets.all(10),
+                        child: CachedNetworkImage(
+                          imageUrl: category[index],
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
                       );
                     },
                   ),

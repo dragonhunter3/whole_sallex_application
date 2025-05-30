@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
@@ -11,6 +12,14 @@ class EditAddressScreen extends StatefulWidget {
 }
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
+  String? selectedAddressId;
+
+  void setSelectedAddress(String addressId) {
+    setState(() {
+      selectedAddressId = addressId;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,70 +35,114 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            context.pushNamed(AppRoute.addresspage);
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          child: Icon(Icons.add, color: Colors.black)),
+        onPressed: () {
+          context.pushNamed(AppRoute.addresspage);
+        },
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        child: Icon(Icons.add, color: Colors.black),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            customAddressContainer(
-                "3 Newbridge Court \nChino Hills, CA 91709, United States",
-                true,
-                () {}),
-            SizedBox(height: 20),
-            customAddressContainer(
-                "3 Newbridge Court \nChino Hills, CA 91709, United States",
-                false,
-                () {}),
-            SizedBox(height: 20),
-            customAddressContainer(
-                "3 Newbridge Court \nChino Hills, CA 91709, United States",
-                false,
-                () {})
-          ],
+        padding: const EdgeInsets.all(16),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('addresses')
+              .orderBy('addedAt', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Text('Something went wrong');
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+              return const Text("No addresses found.");
+            }
+
+            final addresses = snapshot.data!.docs;
+
+            return ListView.separated(
+              itemCount: addresses.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                final doc = addresses[index];
+                final id = doc.id;
+                final data = doc.data() as Map<String, dynamic>;
+
+                final address = data['address'] ?? '';
+                final city = data['city'] ?? '';
+                final state = data['state'] ?? '';
+                final zip = data['zipCode'] ?? '';
+                final country = data['country'] ?? '';
+
+                final fullAddress = "$address\n$city, $state $zip, $country";
+
+                return customAddressContainer(
+                  fullAddress,
+                  selectedAddressId == id,
+                  () {
+                    context.pushNamed(AppRoute.addresspage, extra: doc);
+                  },
+                  () {
+                    setSelectedAddress(id);
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
     );
   }
 
   Widget customAddressContainer(
-      String text1, bool value, VoidCallback finction) {
+    String addressText,
+    bool isSelected,
+    VoidCallback onEdit,
+    VoidCallback onSelect,
+  ) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.15,
-      width: MediaQuery.of(context).size.width,
-      color: Colors.white,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+            color: isSelected ? colorScheme(context).primary : Colors.grey,
+            width: 2),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                text1,
-                style: txtTheme(context).headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme(context).surface),
+              Expanded(
+                child: Text(
+                  addressText,
+                  style: txtTheme(context).headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme(context).surface),
+                ),
               ),
               TextButton(
-                  onPressed: finction,
-                  child: Text(
-                    "Edit",
-                    style: txtTheme(context).headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme(context).primary),
-                  )),
+                onPressed: onEdit,
+                child: Text(
+                  "Edit",
+                  style: txtTheme(context).headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme(context).primary),
+                ),
+              ),
             ],
           ),
           Row(
             children: [
               Checkbox(
-                value: value,
-                onChanged: (value) {},
+                value: isSelected,
+                onChanged: (_) => onSelect(),
               ),
-              SizedBox(width: 30),
+              const SizedBox(width: 10),
               Text(
                 "Use as the shipping address",
                 style: txtTheme(context).headlineSmall?.copyWith(
@@ -97,7 +150,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     color: colorScheme(context).surface),
               )
             ],
-          )
+          ),
         ],
       ),
     );
