@@ -10,7 +10,6 @@ class BiddingMainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.sizeOf(context).height;
-    final w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,12 +23,6 @@ class BiddingMainScreen extends StatelessWidget {
                 color: colorScheme(context).surface,
               ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.history, color: Colors.black),
-          ),
-        ],
       ),
       body: Container(
         padding: const EdgeInsets.all(16),
@@ -59,7 +52,12 @@ class BiddingMainScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: InkWell(
-                    onTap: () => context.pushNamed(AppRoute.startbid),
+                    onTap: () => context.pushNamed(
+                      AppRoute.startbid,
+                      queryParameters: {
+                        'subCategory': subCategoryName,
+                      },
+                    ),
                     child: Container(
                       height: h * 0.14,
                       decoration: BoxDecoration(

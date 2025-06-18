@@ -1,167 +1,100 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:whole_selle_x_application/src/common/const/app_colors.dart';
+import 'package:go_router/go_router.dart';
 import 'package:whole_selle_x_application/src/common/const/global_variables.dart';
+import 'package:whole_selle_x_application/src/router/route.dart';
 
-class StartBidding extends StatefulWidget {
-  const StartBidding({super.key});
+class StartBidding extends StatelessWidget {
+  final String subCategory;
+  const StartBidding({super.key, required this.subCategory});
 
-  @override
-  State<StartBidding> createState() => _StartBiddingState();
-}
-
-class _StartBiddingState extends State<StartBidding> {
   @override
   Widget build(BuildContext context) {
-    var h = MediaQuery.sizeOf(context).height;
-    var w = MediaQuery.sizeOf(context).width;
-
     return Scaffold(
       backgroundColor: colorScheme(context).onPrimary,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: w * 0.6,
-                width: w,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      child: Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 40),
-                    SizedBox(
-                      height: 95,
-                      width: 250,
-                      child: Center(
-                        child: Stack(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.fromLTRB(100, 5, 20, 30),
-                              child: CircleAvatar(
-                                backgroundColor: AppColor.grey,
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(50, 10, 20, 30),
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundColor: AppColor.darkGrey,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Icon(
-                        Icons.fullscreen_outlined,
-                        color: Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: h * 0.7,
-                width: w,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: h * 0.2,
-                      width: w,
-                      padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
-                      decoration: BoxDecoration(
-                        color: colorScheme(context).primary.withOpacity(0.3),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(25),
-                          topRight: Radius.circular(25),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 5),
-                          Text("Auction item name",
-                              style: txtTheme(context).headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme(context).surface)),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 15,
-                                backgroundColor: AppColor.grey,
-                              ),
-                              SizedBox(width: 10),
-                              Text("Owners name",
-                                  style: txtTheme(context)
-                                      .headlineMedium
-                                      ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: colorScheme(context).surface)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 90),
-                      height: h * 0.45,
-                      width: w,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 196, 197, 197),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(25),
-                          topRight: Radius.circular(25),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: h * 0.15,
-                            width: w,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                SizedBox(
-                                  width: w * 0.35,
-                                  height: h * 1,
-                                ),
-                                Container(
-                                  height: h * 0.1,
-                                  width: w * 0.01,
-                                  color: AppColor.grey,
-                                ),
-                                SizedBox(
-                                  width: w * 0.35,
-                                  height: h * 1, 
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: colorScheme(context).onPrimary),
+        backgroundColor: colorScheme(context).onPrimary,
+        title: Text(
+          'Products in "$subCategory"',
+          style: txtTheme(context)
+              .displayMedium
+              ?.copyWith(color: colorScheme(context).primary),
         ),
+        centerTitle: true,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('products')
+            .where('subCategory', isEqualTo: subCategory)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No products found.'));
+          }
+
+          final products = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final product = products[index].data() as Map<String, dynamic>;
+              final name = product['title'] ?? 'Unnamed';
+              final image = product['imageUrl'] ?? '';
+              final discription = product['description'] ?? '';
+              final minmunprice = product['minPrice'] ?? '';
+              final maximumprice = product['maxPrice'] ?? '';
+              final startingTime = product['biddingStartTime'] ?? '';
+              final enddingTime = product['biddingEndTime'] ?? '';
+              final id = product['id'] ?? '';
+
+              return Card(
+                color: Colors.white,
+                child: ListTile(
+                  onTap: () {
+                    context.pushNamed(
+                      AppRoute.aution,
+                      extra: {
+                        'title': name,
+                        'description': discription,
+                        'imageUrl': image,
+                        'minPrice': minmunprice,
+                        'maxPrice': maximumprice,
+                        'biddingStartTime': startingTime,
+                        'biddingEndTime': enddingTime,
+                        'id': id
+                      },
+                    );
+                  },
+                  leading: image.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: image,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(strokeWidth: 2),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.broken_image),
+                        )
+                      : const Icon(Icons.image),
+                  title: Text(name,
+                      style: txtTheme(context).titleLarge?.copyWith(
+                          color: Colors.black, fontWeight: FontWeight.bold)),
+                  subtitle: Text(discription,
+                      style: txtTheme(context)
+                          .titleSmall
+                          ?.copyWith(color: Colors.black)),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

@@ -40,7 +40,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('cards')
-          .where('userId', isEqualTo: userid) // Replace with actual user ID
+          .where('userId', isEqualTo: userid)
           .get();
 
       setState(() {
@@ -75,7 +75,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         'expiry': _expiryController.text,
         'cvv': _cvvController.text,
         'cardName': _cardNameController.text,
-        'userId': userid, // Replace with actual user ID
+        'userId': userid,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -97,7 +97,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> _proceedToCheckout(List<Map<String, dynamic>> cartItems) async {
     try {
-      // First show the payment bottom sheet
       await _showPaymentBottomSheet(context, cartItems);
     } catch (e) {
       if (mounted) {
@@ -129,8 +128,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           },
         };
       }).toList();
-
-      // Store checkout data in 'checkout' collection with timestamp-based doc id
       await FirebaseFirestore.instance
           .collection('checkout')
           .doc(DateTime.now().millisecondsSinceEpoch.toString())
@@ -143,10 +140,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           'cardName': _cardNameController.text,
         },
         'createdAt': FieldValue.serverTimestamp(),
-        'userId': userid, // Replace with actual user ID
+        'userId': userid,
       });
-
-      // Clear cart after checkout
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
       for (var item in cartItems) {
         final product = item['product'] as ProductModel;
@@ -259,8 +254,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         const SizedBox(height: 10),
                       ],
                     ),
-
-                  // New card form
                   Text(
                     'Add New Card',
                     style: txtTheme(context).headlineSmall?.copyWith(
@@ -268,22 +261,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                   ),
                   const SizedBox(height: 15),
-                  // TextField(
-                  //   controller: _cardNameController,
-                  //   decoration: InputDecoration(
-                  //     labelText: 'Cardholder Name',
-                  //     border: OutlineInputBorder(
-                  //       borderRadius: BorderRadius.circular(10),
-                  //     ),
-                  //   ),
-                  // ),
                   CustomTextFormField(
                     controller: _cardNameController,
                     keyboardType: TextInputType.name,
                     labelText: "Card name",
                   ),
                   const SizedBox(height: 15),
-
                   CustomTextFormField(
                     controller: _cardNumberController,
                     keyboardType: TextInputType.number,
